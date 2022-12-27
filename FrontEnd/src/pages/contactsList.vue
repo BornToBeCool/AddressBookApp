@@ -24,7 +24,8 @@
               >
                 Edit Contact
               </button>
-              <button class="btn btn-danger" @click="deleteUser(index)">
+              <button type="button" class="btn btn-danger" @click="deleteContact(index)">
+                
                 Delete Contact
               </button>
             </td>
@@ -39,25 +40,44 @@
 export default {
   data() {
     return {
-      userInformation: ["First Name", "Last Name", "Phone", "Email"],
       user: {},
     };
   },
   methods: {
-    deleteUser(idx) {
-      this.$store.getters.contacts.splice(idx, 1);
+    // delete contact from the backend by finding the index of the contact and get the id of it.
+    deleteContact(idx) {
+      const contactId = this.$store.getters.contacts[idx].id
+      fetch('http://localhost:3000/' + String(contactId),{
+        method: 'DELETE'
+      })
+      this.$store.commit('deleteContact', contactId) 
+      location.reload()
     },
+    // finding the index of the contact that should be updated and save it to the vue store
     editContact(idx) {
-      this.$store.commit("saveIndex", idx);
+      this.$store.commit("savedIndex", idx);
       this.$router.push({ path: "/edit/contact" });
-      console.log(this.$store.state.contactIndex);
     },
+    // loads all contacts from the backend and store them to the vue store
+    loadAllContacts(){
+      fetch("http://localhost:3000/")
+      .then((res) => res.json())
+      .then((data) => this.$store.commit("loadContacts", data))
+    }
   },
   computed: {
-    loadContacts() {
-      return this.$store.getters.contacts;
+    // set the contacts array to epmty and then get all contact to the constand contactsArray and return it
+     loadContacts() {
+      this.$store.commit('updateContacts', ) 
+      const contactsArray = this.$store.getters.contacts;
+      return contactsArray;
     },
   },
+  // call the loadAllContacts method when the page is mounted
+  mounted() {
+    this.loadAllContacts()
+  },
+  
 };
 </script>
 

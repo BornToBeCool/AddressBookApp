@@ -35,7 +35,7 @@
 
                   <div class="form-outline mb-4">
                     <input
-                      type="number"
+                      type="text"
                       id="form3Example4cg"
                       class="form-control form-control-lg"
                       v-model="phone"
@@ -62,8 +62,7 @@
                       variant="primary"
                       v-if="title === 'ADD CONTACT'"
                       type="button"
-                      @click="addUser"
-                      v-on:click="this.$router.push({ path: '/' })"
+                      @click="addContact"
                     >
                       {{ buttonTitle }}
                     </b-button>
@@ -72,7 +71,6 @@
                         variant="primary"
                         type="button"
                         @click="saveContact"
-                        v-on:click="this.$router.push({ path: '/' })"
                       >
                         {{ buttonTitle }}
                       </b-button>
@@ -97,38 +95,57 @@ export default {
       lastName: "",
       phone: "",
       email: "",
+      id: "",
     };
   },
   methods: {
-    addUser() {
-      const user = {
-        first_name: this.firstName,
-        last_name: this.lastName,
-        phone: this.phone,
-        email: this.email,
-      };
-      this.$store.commit("addContact", user);
+    // adds a new contact to the backend
+    addContact() {
+      fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: this.firstName,
+          last_name: this.lastName,
+          phone: this.phone,
+          email: this.email,
+        }),
+      });
+      this.$router.push({ path: "/" });
     },
+    // loads a contact from the vue store and set the values to the input fields
     loadContact() {
       const contact = this.$store.getters.loadContact;
       this.firstName = contact.first_name;
       this.lastName = contact.last_name;
       this.phone = contact.phone;
       this.email = contact.email;
-      return;
+      this.id = contact.id;
+      return contact.id;
     },
+    // saves the updated contact to the backend
     saveContact() {
-      const user = {
+      const contact = {
         first_name: this.firstName,
         last_name: this.lastName,
         phone: this.phone,
         email: this.email,
+        id: this.id,
       };
-      this.$store.commit("saveContact", user);
+      fetch("http://localhost:3000/" + String(contact.id), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(contact),
+      });
+      this.$router.push({ path: "/" });
     },
   },
+  // Calling the function loadContact when the DOM is created
   created() {
-    // Calling the function loadContact if edit page is selected
     if (this.title === "EDIT CONTACT") {
       this.loadContact();
     }

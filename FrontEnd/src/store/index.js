@@ -2,60 +2,44 @@ import { createStore } from "vuex";
 const store = createStore({
   state() {
     return {
-      users: [
-        {
-          first_name: "David",
-          last_name: "Platt",
-          phone: "01913478234",
-          email: "david.platt@corrie.co.uk",
-        },
-        {
-          first_name: "Jason",
-          last_name: "Grimshaw",
-          phone: "01913478123",
-          email: "jason.grimshaw@corrie.co.uk",
-        },
-        {
-          first_name: "Ken",
-          last_name: "Barlow",
-          phone: "019134784929",
-          email: "ken.barlow@corrie.co.uk",
-        },
-        {
-          first_name: "Rita",
-          last_name: "Sullivan",
-          phone: "01913478555",
-          email: "rita.sullivan@corrie.co.uk",
-        },
-        {
-          first_name: "Steve",
-          last_name: "McDonald",
-          phone: "01913478555",
-          email: "steve.mcdonald@corrie.co.uk",
-        },
-      ],
+      contacts: [],
       contactIndex: null,
     };
   },
   getters: {
+    // returns the cotants array
     contacts(state) {
-      return state.users;
+      return state.contacts;
     },
+    // returns the specific by index
     loadContact(state) {
-      return state.users[state.contactIndex];
+      return state.contacts[state.contactIndex];
     },
   },
   mutations: {
-    addContact(state, contact) {
-      state.users.push(contact);
+    // loop through the input array and push every element to contacts array
+    loadContacts(state, inputArray) {
+      for(let i = 0; i < inputArray.length; i++){
+        state.contacts.push(inputArray[i])
+      }
     },
-    saveIndex(state, idx) {
+    // set the contacts array to empty
+    updateContacts(state){
+      state.contacts = []
+    },
+    // deletes a contact by input the id 
+    deleteContact(state, id){
+      state.contacts.slice((contact) => contact.id == id);
+    },
+    // saves the index of the input contact
+    savedIndex(state, idx) {
       state.contactIndex = idx;
     },
+    // saves the contact by index
     saveContact(state, contact) {
       const index = state.contactIndex;
       if (index !== -1) {
-        state.users[index] = contact;
+        state.contacts[index] = contact;
       }
     },
   },
